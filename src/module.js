@@ -42,6 +42,12 @@ function applyMidiCustom(actor, change) {
 Hooks.once("setup", () => {
   if (game.settings.get("adv-reminder", "updateStatusEffects")) updateConditionEffects();
 });
+Hooks.on('i18nInit', () => {
+  for (let [condition, replacement] of Object.entries(CONFIG.DND5E.conditionTypes)) {
+    const statusEffect = CONFIG.statusEffects.find(i => i.id === condition);
+    if (statusEffect && replacement.reference) statusEffect.reference = replacement.reference;
+  }
+});
 
 /**
  * Add advantage-like condition effects for all status effects.
