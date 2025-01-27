@@ -316,7 +316,28 @@ export class SkillReminder extends AbilityCheckReminder {
     }
   }
 }
+export class ToolReminder extends AbilityCheckReminder {
+  constructor(actor, abilityId, toolId) {
+    super(actor, abilityId);
 
+    /** @type {string} */
+    this.toolId = toolId;
+  }
+
+  /** @override */
+  get advantageKeys() {
+    return [
+      "advantage.skill.all",
+      `advantage.skill.${this.toolId}`];
+  }
+
+  /** @override */
+  get disadvantageKeys() {
+    return [
+      "disadvantage.skill.all",
+      `disadvantage.skill.${this.toolId}`,];
+  }
+}
 export class DeathSaveReminder extends AbilityBaseReminder {
   constructor(actor) {
     super(actor, null);

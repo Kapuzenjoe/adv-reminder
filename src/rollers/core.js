@@ -7,6 +7,7 @@ import {
   DamageMessageV2,
   DeathSaveMessage,
   SkillMessage,
+  ToolMessage,
 } from "../messages.js";
 import {
   AttackReminderV2,
@@ -15,6 +16,7 @@ import {
   CriticalReminderV2,
   DeathSaveReminder,
   SkillReminder,
+  ToolReminder,
 } from "../reminders.js";
 import {
   AbilityCheckSource,
@@ -24,6 +26,7 @@ import {
   CriticalSourceV2,
   DeathSaveSource,
   SkillSource,
+  ToolSource,
 } from "../sources.js";
 import { showSources } from "../settings.js";
 import { debug, getDistanceToTargetFn, getTarget } from "../util.js";
@@ -51,7 +54,7 @@ export default class CoreRollerHooks {
     Hooks.on("dnd5e.preRollSkillV2", this.preRollSkillV2.bind(this));
     Hooks.on("dnd5e.preRollAbilityCheckV2", this.preRollAbilityCheckV2.bind(this));  
     Hooks.on("dnd5e.preRollSavingThrowV2", this.preRollSavingThrowV2.bind(this));
-    //Hooks.on("dnd5e.preRollToolV2", this.preRollToolV2.bind(this));
+    Hooks.on("dnd5e.preRollToolV2", this.preRollToolV2.bind(this));
     Hooks.on("dnd5e.preRollDeathSaveV2", this.preRollDeathSaveV2.bind(this));
     Hooks.on("dnd5e.preRollConcentrationV2", this.preRollConcentrationV2.bind(this));
     Hooks.on("dnd5e.preRollDamageV2", this.preRollDamageV2.bind(this));
@@ -121,15 +124,15 @@ export default class CoreRollerHooks {
     new SkillReminder(config.subject, config.ability, config.skill, this.checkArmorStealth).updateOptions(config.rolls[0].options);
   }
 
-  /**preRollToolV2(config, dialog, message)  {//toDo: Missing Message for tools
-    debug("preRollToolCheck hook called");
+  preRollToolV2(config, dialog, message)  {
+    debug("preRollToolV2 hook called");
 
     if (this.isFastForwarding(config, dialog)) return;
 
-    new AbilityCheckMessage(config.subject, config.ability).addMessage(dialog);
-    if (showSources) new AbilityCheckSource(config.subject, config.ability).updateOptions(dialog);
-    new AbilityCheckReminder(config.subject, config.ability).updateOptions(dialog);
-  }*/
+    new ToolMessage(config.subject, config.ability, config.tool).addMessage(dialog);
+    if (showSources) new ToolSource(config.subject, config.ability, config.tool).updateOptions(dialog);
+    new ToolReminder(config.subject, config.ability, config.tool).updateOptions(config.rolls[0].options);
+  }
 
   preRollDeathSaveV2(config, dialog, message)  {
     debug("preRollDeathSaveV2 hook called");

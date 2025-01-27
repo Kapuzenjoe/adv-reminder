@@ -156,7 +156,21 @@ export class SkillMessage extends AbilityCheckMessage {
       `flags.adv-reminder.message.skill.${this.skillId}`]
   }
 }
+export class ToolMessage extends AbilityCheckMessage {
+  constructor(actor, abilityId, toolID) {
+    super(actor, abilityId);
 
+    /** @type {string} */
+    this.toolID = toolID;
+  }
+
+  /** @override */
+  get messageKeys() {
+    return [
+      "flags.adv-reminder.message.tool.all",
+      `flags.adv-reminder.message.tool.${this.toolID}`]
+  }
+}
 export class DeathSaveMessage extends AbilityBaseMessage {
   constructor(actor) {
     super(actor, null);

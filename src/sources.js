@@ -7,6 +7,7 @@ import {
   CriticalReminderV2,
   DeathSaveReminder,
   SkillReminder,
+  ToolReminder,
 } from "./reminders.js";
 import { debug } from "./util.js";
 
@@ -136,6 +137,8 @@ export class ConcentrationSource extends SourceMixin(Object) {
 export class AbilityCheckSource extends SourceMixin(AbilityCheckReminder) {}
 
 export class SkillSource extends SourceMixin(SkillReminder) {}
+
+export class ToolSource extends SourceMixin(ToolReminder) {}
 
 export class DeathSaveSource extends SourceMixin(DeathSaveReminder) {}
 
