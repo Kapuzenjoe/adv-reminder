@@ -99,7 +99,22 @@ export class AttackSource extends SourceMixin(AttackReminder) {}
 export class AttackSourceV2 extends SourceMixin(AttackReminderV2) {
 }
 
-export class AbilitySaveSource extends SourceMixin(AbilitySaveReminder) {}
+export class AbilitySaveSource extends SourceMixin(AbilitySaveReminder) {
+  //temp - workaround
+  updateOptions(options) {
+    this._message();
+    // get the active effect keys applicable for this roll
+    const advKeys = this.advantageKeys;
+    const disKeys = this.disadvantageKeys;
+    debug("advKeys", advKeys, "disKeys", disKeys);
+
+    // find matching keys, status effects, and update options
+    const accumulator = this._accumulator();
+    accumulator.add(this.actorFlags, advKeys, disKeys);
+    accumulator.fromConditions(this.actor, this.advantageConditions, this.disadvantageConditions);
+    accumulator.update(options);
+  }
+}
 
 export class ConcentrationSource extends SourceMixin(Object) {
   constructor(actor, abilityId) {
@@ -126,12 +141,85 @@ export class ConcentrationSource extends SourceMixin(Object) {
   }
 }
 
-export class AbilityCheckSource extends SourceMixin(AbilityCheckReminder) {}
+export class AbilityCheckSource extends SourceMixin(AbilityCheckReminder) {
+  //temp - workaround
+  updateOptions(options) {
+    this._message();
+    // get the active effect keys applicable for this roll
+    const advKeys = this.advantageKeys;
+    const disKeys = this.disadvantageKeys;
+    debug("advKeys", advKeys, "disKeys", disKeys);
 
-export class SkillSource extends SourceMixin(SkillReminder) {}
+    // find matching keys, status effects, and update options
+    const accumulator = this._accumulator();
+    accumulator.add(this.actorFlags, advKeys, disKeys);
+    accumulator.fromConditions(this.actor, this.advantageConditions, this.disadvantageConditions);
+    accumulator.update(options);
+  }
+}
 
-export class DeathSaveSource extends SourceMixin(DeathSaveReminder) {}
+export class SkillSource extends SourceMixin(SkillReminder) {
+  //temp - workaround
+  updateOptions(options) {
+    this._message();
+    // get the active effect keys applicable for this roll
+    const advKeys = this.advantageKeys;
+    const disKeys = this.disadvantageKeys;
+    debug("advKeys", advKeys, "disKeys", disKeys);
 
+    // find matching keys, status effects, and update options
+    const accumulator = this._accumulator();
+    accumulator.add(this.actorFlags, advKeys, disKeys);
+    accumulator.fromConditions(this.actor, this.advantageConditions, this.disadvantageConditions);
+    accumulator.update(options);
+  }
+}
+
+export class DeathSaveSource extends SourceMixin(Object) {
+  constructor(actor) {
+    super();
+    
+    /** @type {object} */
+    this.death = actor.system.attributes?.death;
+  }
+
+  updateOptions(options) {
+    this._message();
+
+    const modes = CONFIG.Dice.D20Roll.ADV_MODE;
+    const source = () =>
+      game.i18n.localize("DND5E.DeathSave") + " " + game.i18n.localize("DND5E.AdvantageMode");
+
+    // check Concentration's roll mode to look for advantage/disadvantage
+    const accumulator = this._accumulator();
+    if (this.death.roll.mode === modes.ADVANTAGE) accumulator.advantage(source());
+    else if (this.death.roll.mode === modes.DISADVANTAGE) accumulator.disadvantage(source());
+    accumulator.update(options);
+  }
+}
+export class InitiativeSource extends SourceMixin(Object) {
+  constructor(actor) {
+    super();
+    
+    /** @type {object} */
+    this.init = actor.system.attributes?.init;
+    this.initMode = actor.flags.dnd5e.initiativeAdv
+  }
+
+  updateOptions(options) {
+    this._message();
+
+    const modes = CONFIG.Dice.D20Roll.ADV_MODE;
+    const source = () =>
+      game.i18n.localize("DND5E.Initiative") + " " + game.i18n.localize("DND5E.AdvantageMode");
+
+    // check Concentration's roll mode to look for advantage/disadvantage
+    const accumulator = this._accumulator();
+    if ((this.init.roll.mode === modes.ADVANTAGE) || (this.initMode === true)) accumulator.advantage(source());
+    else if (this.init.roll.mode === modes.DISADVANTAGE) accumulator.disadvantage(source());
+    accumulator.update(options);
+  }
+}
 export class CriticalSource extends SourceMixin(CriticalReminder) {
   _adjustRange(distanceFn, grantsCriticalRange) {
     // check if the range applies, remove flag if not

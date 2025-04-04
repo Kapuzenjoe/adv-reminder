@@ -185,7 +185,7 @@ class AbilityBaseReminder extends BaseReminder {
     return [];
   }
 
-  updateOptions(options) {
+  updateOptions(config) {
     this._message();
 
     // get the active effect keys applicable for this roll
@@ -194,10 +194,10 @@ class AbilityBaseReminder extends BaseReminder {
     debug("advKeys", advKeys, "disKeys", disKeys);
 
     // find matching keys, status effects, and update options
-    const accumulator = options.isConcentration ? this._accumulator(options) : this._accumulator();
+    const accumulator = ((config.hookNames[0] == "concentration") || (config.hookNames[0] == "initiativeDialog") || (config.hookNames[0] == "deathSave") ) ? this._accumulator(config.rolls[0].options) : this._accumulator();
     accumulator.add(this.actorFlags, advKeys, disKeys);
     accumulator.fromConditions(this.actor, this.advantageConditions, this.disadvantageConditions);
-    accumulator.update(options);
+    accumulator.update(config.rolls[0].options);
   }
 }
 
@@ -283,7 +283,7 @@ export class SkillReminder extends AbilityCheckReminder {
   }
 
   /** @override */
-  updateOptions(options) {
+  updateOptions(config) {
     this._message();
 
     // get the active effect keys applicable for this roll
@@ -292,13 +292,13 @@ export class SkillReminder extends AbilityCheckReminder {
     debug("advKeys", advKeys, "disKeys", disKeys);
 
     // find matching keys and update options
-    const accumulator = this._accumulator();
+    const accumulator = ((config.hookNames[0] == "concentration") || (config.hookNames[0] == "initiativeDialog") || (config.hookNames[0] == "deathSave") ) ? this._accumulator(config.rolls[0].options) : this._accumulator();
     if (this.checkArmorStealth) {
       accumulator.disadvantage(this._armorStealthDisadvantage());
     }
     accumulator.add(this.actorFlags, advKeys, disKeys);
     accumulator.fromConditions(this.actor, this.advantageConditions, this.disadvantageConditions);
-    accumulator.update(options);
+    accumulator.update(config.rolls[0].options);
   }
 
   /**
